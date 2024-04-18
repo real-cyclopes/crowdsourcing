@@ -20,11 +20,18 @@ export function GrammarToolPage() {
     }
 
     try {
-      const { svg } = await mermaid.render(
+      const { svg, bindFunctions } = await mermaid.render(
         'graphDiv',
         `SimpleGrammar\n${text}`,
       );
       containerRef.current.innerHTML = svg;
+
+      const svgElement = containerRef.current.getElementsByTagName('svg');
+      if (svgElement.length > 0) {
+        const rect = svgElement[0].getBBox();
+        containerRef.current.style.width = `${rect.width}px`;
+      }
+      bindFunctions?.(containerRef.current);
     } catch (err) {
       present({
         message: err as string,
@@ -56,10 +63,19 @@ export function GrammarToolPage() {
       </Stack>
 
       <Stack
-        ref={containerRef}
-        alignItems="flex-end"
-        justifyContent="flex-end"
-      />
+        sx={{
+          overflow: 'auto',
+          maxHeight: '700px',
+          border: '1px solid #38bdf8',
+        }}
+      >
+        <Stack
+          ref={containerRef}
+          alignItems="flex-end"
+          justifyContent="flex-end"
+          sx={{ transform: 'translateX(200px)' }}
+        />
+      </Stack>
     </PageLayout>
   );
 }
